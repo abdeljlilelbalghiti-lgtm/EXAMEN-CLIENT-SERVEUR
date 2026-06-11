@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Résultats</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h1>📊 Résultats des votes</h1>
+
+<div class="container" id="results"></div>
+
+<script>
+    const API = "http://localhost:3000/api";
+
+    async function loadResults() {
+        const resultsEl = document.getElementById("results");
+        const messageEl = document.getElementById("message");
+        try {
+            messageEl.innerText = "";
+            resultsEl.innerHTML = "";
+
+            const res = await fetch(`${API}/results`);
+            if (!res.ok) {
+                const err = await res.json().catch(() => null);
+                throw new Error(err?.message || `Erreur HTTP: ${res.status}`);
+            }
+
+            const data = await res.json();
+
+            data.forEach(r => {
+                resultsEl.innerHTML += `
+                    <div class="candidate">
+                        <h3>${r.name}</h3>
+                        <p>Votes: ${r.total_votes}</p>
+                    </div>
+                `;
+            });
+        } catch (e) {
+            console.error(e);
+            messageEl.innerText = "Impossible de charger les résultats.";
+        }
+    }
+
+    loadResults();
+</script>
+
+
+</body>
+</html>
